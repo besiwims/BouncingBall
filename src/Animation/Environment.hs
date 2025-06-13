@@ -16,7 +16,7 @@ data Environment = Environment
   , shooterRadius  :: Float         -- ^ Shooter collision radius
   , bulletSpeed    :: Float         -- ^ Bullet speed (px/sec)
   , bulletRadius   :: Float         -- ^ Bullet radius
-  }
+}deriving (Show)                                                                                                              
 
 -- | Sensible defaults for quick experimentation
 getDefaultEnv :: Environment

@@ -23,6 +23,7 @@ data State = State
   , ballColor :: Color     -- ^ color for rendering
   }
   deriving (Show, Eq)
+  
 
 -- | Construct a State from the 7‐tuple you build in initBalls
 initState :: (Int, XY, XY, XY, XY, XY, Color) -> State
@@ -34,7 +35,7 @@ data Shooter = Shooter
   { shooterPos :: (Float, Float)
   , shooterDir :: Float
   , shooterVel :: (Float, Float)
-  }
+  }deriving (Show)
 
 -- | A bullet that the shooter fires
 data Bullet = Bullet

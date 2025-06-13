@@ -4,7 +4,7 @@ version:             0.1.0.0
 build-type:          Simple
 
 library
-  hs-source-dirs:      src
+  hs-source-dirs:      src, test
   exposed-modules:
       Animation.Environment
     , Animation.Input
@@ -12,8 +12,15 @@ library
     , Animation.Init
     , Animation.Draw
     , Animation.Game
+    , TestDraw
+    , TestEnvironment
+    , TestGame
+    , TestInit
+    , TestInput
+    , TestState
   build-depends:
       base           >=4.12 && <4.15
+    , QuickCheck      >=2.14
     , gloss
     , mtl
     , transformers
@@ -21,8 +28,6 @@ library
     , directory
     , time
     , text
-    , random  
-    , directory   
   default-language:    Haskell2010
 
 executable bouncing-ball
@@ -40,8 +45,36 @@ executable bouncing-ball
     , gloss
     , mtl
     , transformers
-    , random    
-    , directory    
+    , random
+    , directory
     , time
     , text
+  default-language:    Haskell2010
+
+test-suite all-tests
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test, src
+  main-is:             AllTests.hs
+  other-modules:
+      Animation.Draw
+    , Animation.Environment
+    , Animation.Game
+    , Animation.Init
+    , Animation.Input
+    , Animation.State
+    , TestDraw
+    , TestEnvironment
+    , TestGame
+    , TestInit
+    , TestInput
+    , TestState
+  build-depends:
+      base
+    , QuickCheck
+    , gloss
+    , mtl
+    , bouncing-ball
+    , directory
+    , random
+    , time
   default-language:    Haskell2010

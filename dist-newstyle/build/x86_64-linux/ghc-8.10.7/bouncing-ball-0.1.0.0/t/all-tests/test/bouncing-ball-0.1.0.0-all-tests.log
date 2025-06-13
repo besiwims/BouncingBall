@@ -1,0 +1,38 @@
+Test suite all-tests: RUNNING...
+
+==== Environment Tests ====
++++ OK, passed 100 tests.
++++ OK, passed 100 tests.
+-- Environment Tests completed in 0.000539862s
+
+==== Input Tests ====
++++ OK, passed 100 tests; 283 discarded.
+-- Input Tests completed in 0.000678589s
+
+==== Draw Tests ====
+*** Failed! Falsified (after 1 test):
+Environment {framePerSecond = 360, frameDimension = (963,891), ballRadius = 20.217146, ballStartV = 5.0, ballCharge = 5.0, maxBallVel = 200.0, ballCounts = 10, saveLogTxt = False, logTxtPath = "ball_log.txt", shooterSpeed = 200.0, shooterRadius = 10.0, bulletSpeed = 400.0, bulletRadius = 3.0}
+Exception thrown while showing test case:
+  Prelude.undefined
+  CallStack (from HasCallStack):
+    error, called at libraries/base/GHC/Err.hs:79:14 in base:GHC.Err
+    undefined, called at test/TestDraw.hs:30:15 in main:TestDraw
+
+0.0
+-- Draw Tests completed in 0.000142877s
+
+==== Init Tests ====
++++ OK, passed 100 tests.
+-- Init Tests completed in 0.000551076s
+
+==== State Tests ====
++++ OK, passed 100 tests.
+-- State Tests completed in 0.000165996s
+
+==== Game Tests ====
++++ OK, passed 100 tests.
+-- Game Tests completed in 0.000281871s
+
+All tests finished!
+Test suite all-tests: PASS
+Test suite logged to: /home/wims/games/BouncingBall/dist-newstyle/build/x86_64-linux/ghc-8.10.7/bouncing-ball-0.1.0.0/t/all-tests/test/bouncing-ball-0.1.0.0-all-tests.log

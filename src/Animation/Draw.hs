@@ -3,6 +3,7 @@ module Animation.Draw
   ( window
   , drawBalls
   , stepBalls
+  , stepOne
   ) where
 
 import Control.Monad.Reader      (Reader, ReaderT, ask)

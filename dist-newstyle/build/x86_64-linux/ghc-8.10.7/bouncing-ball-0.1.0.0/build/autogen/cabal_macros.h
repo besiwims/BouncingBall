@@ -10,6 +10,16 @@
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_bouncing_ball */
+/* package QuickCheck-2.15.0.1 */
+#ifndef VERSION_QuickCheck
+#define VERSION_QuickCheck "2.15.0.1"
+#endif /* VERSION_QuickCheck */
+#ifndef MIN_VERSION_QuickCheck
+#define MIN_VERSION_QuickCheck(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  15 || \
+  (major1) == 2 && (major2) == 15 && (minor) <= 0)
+#endif /* MIN_VERSION_QuickCheck */
 /* package base-4.14.3.0 */
 #ifndef VERSION_base
 #define VERSION_base "4.14.3.0"
