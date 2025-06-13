@@ -99,7 +99,7 @@ getSpeed = do
 getCount :: ReaderT (Int, Bool) IO Int
 getCount = do
     (maxCount, firstRun) <- ask
-    let defC = min maxCount 500 -- default value cannot be greater than max value
+    let defC = min maxCount 1000 -- default value cannot be greater than max value
     let maxC = show maxCount
     
     when firstRun do
