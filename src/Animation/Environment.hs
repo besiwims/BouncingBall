@@ -21,7 +21,7 @@ getDefaultEnv = Environment
     , ballStartV = 5
     , ballCharge = 50
     , maxBallVel = 500
-    , ballCounts = 500
+    , ballCounts = 1000
     , saveLogTxt = False
     , logTxtPath = "./log.txt"
     }
