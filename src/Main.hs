@@ -1,27 +1,35 @@
 module Main where
 
-import Animation.Draw
-import Animation.Environment
-import Animation.Init
+import System.IO                  (hSetBuffering, stdout, BufferMode(NoBuffering))
+import System.Environment         (getArgs)
 
-import Control.Monad.Trans.Reader
+import Graphics.Gloss             (Display(InWindow), black)
+import Graphics.Gloss.Interface.IO.Game
+  ( playIO )
 
-import Graphics.Gloss.Interface.IO.Simulate
-
-import System.Environment
-import System.IO
+import Animation.Environment      ( frameDimension, framePerSecond )
+import Animation.Init             ( initGame )
+import Animation.Game             ( drawGame, handleInput, stepGame )
 
 main :: IO ()
 main = do
-    hSetBuffering stdout NoBuffering -- auto-flush all putStr
-    
-    env <- initEnv =<< getArgs
-    let fps = framePerSecond env
-    
-    let fRunReader  = flip runReader  env
-        fRunReaderT = flip runReaderT env
-    initialState <- fRunReaderT initBalls
-    let wndw = fRunReader window
-        draw = fRunReaderT . drawBalls
-        step _ sec = fRunReaderT . stepBalls sec
-    simulateIO wndw black fps initialState draw step
+  -- Don’t buffer stdout so prompts show immediately
+  hSetBuffering stdout NoBuffering
+
+  -- Initialize env & state
+  (env, initialState) <- initGame =<< getArgs
+
+  -- Unpack window size & FPS
+  let (w, h)  = frameDimension env
+      display = InWindow "BouncingBall" (w, h) (100, 100)
+      fps     = framePerSecond env
+
+  -- Run the Gloss play loop
+  playIO
+    display
+    black
+    fps
+    initialState
+    (drawGame env)
+    (handleInput env)
+    (stepGame env)

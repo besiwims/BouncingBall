@@ -1,68 +1,47 @@
+{-# LANGUAGE RecordWildCards #-}
 module Animation.State
-( State(..)
-, posX
-, posY
-, velX
-, velY
-, dirX
-, dirY
-, velIncX
-, velIncY
-, maxVelX
-, maxVelY
-, initState
-)
-where
+  ( State(..)
+  , initState
+  , Shooter(..)
+  , Bullet(..)
+  , GameState
+  ) where
 
-import Graphics.Gloss
+import Graphics.Gloss (Color)
 
-type XY = (Float, Float) -- private type
-data State
-    = State
-    { ballID :: Int
-    , pos :: XY
-    , vel :: XY
-    , dir :: XY
-    , velInc :: XY
-    , maxVel :: XY
-    , ballColor :: Color
-    }
+-- | 2D vector alias
+type XY = (Float, Float)
 
-posX :: State -> Float
-posX = fst . pos
+-- | One bouncing‐ball’s mutable state
+data State = State
+  { ballID    :: Int       -- ^ unique identifier
+  , pos       :: XY        -- ^ (x,y) position
+  , vel       :: XY        -- ^ (vx,vy) velocity
+  , dir       :: XY        -- ^ direction multipliers (+1 or –1)
+  , velInc    :: XY        -- ^ how much to change velocity on a bounce
+  , maxVel    :: XY        -- ^ upper bound on speed
+  , ballColor :: Color     -- ^ color for rendering
+  }
+  deriving (Show, Eq)
 
-posY :: State -> Float
-posY = snd . pos
+-- | Construct a State from the 7‐tuple you build in initBalls
+initState :: (Int, XY, XY, XY, XY, XY, Color) -> State
+initState (bid, p, v, d, vI, mV, col) =
+  State bid p v d vI mV col
 
-velX :: State -> Float
-velX = fst . vel
+-- | The shooter can move, rotate, *and* carry a current thrust velocity
+data Shooter = Shooter
+  { shooterPos :: (Float, Float)
+  , shooterDir :: Float
+  , shooterVel :: (Float, Float)
+  }
 
-velY :: State -> Float
-velY = snd . vel
+-- | A bullet that the shooter fires
+data Bullet = Bullet
+  { bulletPos :: XY            -- ^ (x,y) position
+  , bulletVel :: XY            -- ^ (vx,vy) velocity
+  }
+  deriving (Show, Eq)
 
-dirX :: State -> Float
-dirX = fst . dir
-
-dirY :: State -> Float
-dirY = snd . dir
-
-velIncX :: State -> Float
-velIncX = fst . velInc
-
-velIncY :: State -> Float
-velIncY = snd . velInc
-
-maxVelX :: State -> Float
-maxVelX = fst . maxVel
-
-maxVelY :: State -> Float
-maxVelY = snd . maxVel
-
-type Pos = XY
-type Vel = XY
-type Dir = XY
-type VelInc = XY
-type MaxVel = XY
-initState :: (Int, Pos, Vel, Dir, VelInc, MaxVel, Color) -> State
-initState (ballID, pos, vel, dir, vInc, maxV, color) =
-    State ballID pos vel dir vInc maxV color
+-- | Full game snapshot: balls, shooter, and active bullets
+type GameState = ([State], Shooter, [Bullet])

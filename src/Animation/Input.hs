@@ -1,130 +1,129 @@
 {-# LANGUAGE BlockArguments #-}
 
 module Animation.Input
-( getFrameW
-, getFrameH
-, getBallSize
-, getBallInitVel
-, getMaxVelocity
-, getWallCharges
-, getFileLogging
-, getBallCount
-)
-where
+  ( getFrameW
+  , getFrameH
+  , getBallSize
+  , getBallInitVel
+  , getMaxVelocity
+  , getWallCharges
+  , getFileLogging
+  , getBallCount
+  ) where
 
-import Control.Concurrent
-import Control.Monad
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Reader
+import Control.Monad          (when)
+import Control.Monad.Reader   (ReaderT, ask, runReaderT)
+import Control.Monad.IO.Class (liftIO)
+import Data.Char              (isDigit, toUpper)
 
-import Data.Char
-
-getFrameW :: IO Int -- initial window width
+-- | Initial window width
+getFrameW :: IO Int
 getFrameW = runReaderT getWH ("Width [min.250, default 1500]: ", 1500)
 
-getFrameH :: IO Int -- initial window height
+-- | Initial window height
+getFrameH :: IO Int
 getFrameH = runReaderT getWH ("Height [min.250, default 750]: ", 750)
 
-getBallSize :: Int -> IO Float -- ball radius
+-- | Ball radius (max limited by argument)
+getBallSize :: Int -> IO Float
 getBallSize = runReaderT getSize
 
-getBallInitVel :: IO Float -- initial velocity
+-- | Initial ball speed
+getBallInitVel :: IO Float
 getBallInitVel = runReaderT getSpeed ("Initial speed [default 5]: ", 5)
 
-getMaxVelocity :: IO Float -- maximum velocity
+-- | Maximum ball speed
+getMaxVelocity :: IO Float
 getMaxVelocity = runReaderT getSpeed ("Max. speed [default 500]: ", 500)
 
-getWallCharges :: IO Float -- velocity increment
+-- | Wall “charge” (velocity increment on bounce)
+getWallCharges :: IO Float
 getWallCharges = runReaderT getSpeed ("Wall charge [default 50]: ", 50)
 
-getFileLogging :: IO Bool -- enable file logging
+-- | Toggle file logging
+getFileLogging :: IO Bool
 getFileLogging = do
-    putStr "Enable logging? [Y / N, default N]: "
-    input <- getLine
-    if null input -- if null then print and return default value
-    then putStrLn "N" >> return False
-    else if input == "y" || input == "Y"
-    then return True
-    else if input == "n" || input == "N"
-    then return False
-    else putStr "Only Y or N. " >> getFileLogging
+  putStr "Enable logging? [Y/N, default N]: "
+  inp <- getLine
+  case fmap toUpper inp of
+    ""  -> return False
+    "Y" -> return True
+    "N" -> return False
+    _   -> putStrLn "Please enter Y or N." >> getFileLogging
 
+-- | Number of balls, with max + first-run message
 getBallCount :: Int -> Bool -> IO Int
 getBallCount = curry $ runReaderT getCount
 
--- private func
+-- ----------------------------------------------------------------------------
+-- Private reader actions
+-- ----------------------------------------------------------------------------
+
+-- | Generic width/height prompt
 getWH :: ReaderT (String, Int) IO Int
 getWH = do
-    (label, defaultValue) <- ask
-    liftIO . putStr $ label
-    input <- liftIO getLine
-    if null input -- if null then print and return default value
-    then (liftIO . print $ defaultValue) >> return defaultValue
-    else case isInputAllDigit input of
-        Left no -> (liftIO . putStr $ no) >> getWH
-        Right i -> if i < 250
-            then (liftIO . putStr $ "Min.250, ") >> getWH
-            else return i
-        
-    
+  (lbl, def) <- ask
+  liftIO $ putStr lbl
+  inp <- liftIO getLine
+  if null inp then do
+    liftIO $ print def
+    return def
+  else if all isDigit inp then
+    let n = read inp in
+      if n < 250
+        then liftIO (putStr "Min.250. ") >> getWH
+        else return n
+  else
+    liftIO (putStr "Must be a non-negative integer. ") >> getWH
 
--- private func
-getSize :: ReaderT Int IO Float -- ball radius
+-- | Ball‐size prompt
+getSize :: ReaderT Int IO Float
 getSize = do
-    maxRadius <- ask
-    liftIO . putStr $
-        "Ball radius [between 1.." ++ show maxRadius ++ ", default 5]: "
-    input <- liftIO getLine
-    if null input -- if null then print and return default value
-    then (liftIO . print $ 5) >> return 5
-    else case isInputAllDigit input >>= isInputBetween (1, maxRadius) of
-        Left error -> (liftIO . putStr $ error) >> getSize
-        Right size -> return size
-    
+  maxR <- ask
+  liftIO $ putStr $ "Ball radius [1.." ++ show maxR ++ ", default 5]: "
+  inp <- liftIO getLine
+  if null inp then do
+    liftIO $ print (5 :: Int)
+    return 5.0
+  else if all isDigit inp then
+    let n = read inp in
+      if n < 1 || n > maxR
+        then liftIO (putStrLn $ "Must be between 1 and " ++ show maxR) >> getSize
+        else return (fromIntegral n)
+  else
+    liftIO (putStr "Must be a non-negative integer. ") >> getSize
 
--- private func
+-- | Generic float-valued prompt (runs on Int input)
 getSpeed :: ReaderT (String, Float) IO Float
-getSpeed = do 
-    (label, defaultValue) <- ask
-    liftIO . putStr $ label
-    input <- liftIO getLine
-    if null input -- if null then print and return default value
-    then (liftIO . print . truncate $ defaultValue) >> return defaultValue
-    else case isInputAllDigit input of
-        Left reject -> (liftIO . putStr $ reject) >> getSpeed
-        Right speed -> return . fromIntegral $ speed
-    
+getSpeed = do
+  (lbl, def) <- ask
+  liftIO $ putStr lbl
+  inp <- liftIO getLine
+  if null inp then do
+    liftIO $ print (truncate def)
+    return def
+  else if all isDigit inp then
+    return $ fromIntegral (read inp)
+  else
+    liftIO (putStr "Must be a non-negative integer. ") >> getSpeed
 
--- private func
+-- | Ball-count prompt with optional “first run” message
 getCount :: ReaderT (Int, Bool) IO Int
 getCount = do
-    (maxCount, firstRun) <- ask
-    let defC = min maxCount 1000 -- default value cannot be greater than max value
-    let maxC = show maxCount
-    
-    when firstRun do
-        liftIO . putStr $ "Surprise! "
-        liftIO . threadDelay $ 1000000
-        liftIO . putStr $ "One last thing... "
-        liftIO . threadDelay $ 1000000
-    liftIO . putStr $
-        "How many balls [max." ++ maxC ++ ", default " ++ show defC ++ "]: "
-    input <- liftIO getLine
-    if null input -- if null then print and return default value
-    then (liftIO . print $ defC) >> return defC
-    else case isInputAllDigit input >>= isInputBetween (1, maxCount) of
-        Left reject -> (liftIO . putStr $ reject) >> getCount
-        Right count -> return count
-    
-
--- private func
-isInputAllDigit :: String -> Either String Int
-isInputAllDigit input = if all isDigit input
-    then Right . read $ input
-    else Left "Input must be a non-negative number. "
-
--- private func
-isInputBetween :: (Num n) => (Int, Int) -> Int -> Either String n
-isInputBetween (from, to) input = if input >= from && input <= to
-    then Right . fromIntegral $ input
-    else Left $ "Between " ++ show from ++ ".." ++ show to ++ ", "
+  (maxC, firstRun) <- ask
+  let defC = min maxC 500
+      maxS = show maxC
+  when firstRun $
+    liftIO $ putStrLn "Surprise! Creating your log file..."
+  liftIO $ putStr $ "How many balls [1.." ++ maxS ++ ", default " ++ show defC ++ "]: "
+  inp <- liftIO getLine
+  if null inp then do
+    liftIO $ print defC
+    return defC
+  else if all isDigit inp then
+    let n = read inp in
+      if n < 1 || n > maxC
+        then liftIO (putStrLn $ "Must be between 1 and " ++ maxS) >> getCount
+        else return n
+  else
+    liftIO (putStr "Must be a non-negative integer. ") >> getCount

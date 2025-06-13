@@ -1,43 +1,49 @@
 module Animation.Environment where
 
-data Environment
-    = Environment
-    { framePerSecond :: Int
-    , frameDimension :: (Int, Int)
-    , ballRadius :: Float
-    , ballStartV :: Float
-    , ballCharge :: Float
-    , maxBallVel :: Float
-    , ballCounts :: Int
-    , saveLogTxt :: Bool
-    , logTxtPath :: String
-    }
+-- | Configuration for the bouncing-ball shooter game
+data Environment = Environment
+  { framePerSecond :: Int           -- ^ Simulation FPS
+  , frameDimension :: (Int, Int)    -- ^ (width, height) in pixels
+  , ballRadius     :: Float         -- ^ Radius of each ball
+  , ballStartV     :: Float         -- ^ Initial ball speed
+  , ballCharge     :: Float         -- ^ Bounce “charge” increment
+  , maxBallVel     :: Float         -- ^ Maximum ball speed
+  , ballCounts     :: Int           -- ^ Number of balls
+  , saveLogTxt     :: Bool          -- ^ Enable trajectory logging
+  , logTxtPath     :: String        -- ^ Log file path
+  -- Shooter settings
+  , shooterSpeed   :: Float         -- ^ Shooter move speed (px/sec)
+  , shooterRadius  :: Float         -- ^ Shooter collision radius
+  , bulletSpeed    :: Float         -- ^ Bullet speed (px/sec)
+  , bulletRadius   :: Float         -- ^ Bullet radius
+  }
 
+-- | Sensible defaults for quick experimentation
 getDefaultEnv :: Environment
 getDefaultEnv = Environment
-    { framePerSecond = 360
-    , frameDimension = (1500, 750)
-    , ballRadius = 5
-    , ballStartV = 5
-    , ballCharge = 50
-    , maxBallVel = 500
-    , ballCounts = 1000
-    , saveLogTxt = False
-    , logTxtPath = "./log.txt"
-    }
+  { framePerSecond = 360
+  , frameDimension = (1500, 750)
+  , ballRadius     = 5
+  , ballStartV     = 5
+  , ballCharge     = 5
+  , maxBallVel     = 200
+  , ballCounts     = 10
+  , saveLogTxt     = False
+  , logTxtPath     = "ball_log.txt"
+  , shooterSpeed   = 200
+  , shooterRadius  = 10
+  , bulletSpeed    = 400
+  , bulletRadius   = 3
+  }
 
-frameW :: (Num n) => Environment -> n
-frameW = fromIntegral . fst . frameDimension
-
-frameH :: (Num n) => Environment -> n
-frameH = fromIntegral . snd . frameDimension
-
+-- Half‐width and half‐height in centered coords
 wBound :: Environment -> Float
-wBound = (/2) . frameW
+wBound env = fromIntegral (fst (frameDimension env)) / 2
 
 hBound :: Environment -> Float
-hBound = (/2) . frameH
+hBound env = fromIntegral (snd (frameDimension env)) / 2
 
+-- Spawn limits (edge minus radius)
 xBound :: Environment -> Float
 xBound env = wBound env - ballRadius env
 
