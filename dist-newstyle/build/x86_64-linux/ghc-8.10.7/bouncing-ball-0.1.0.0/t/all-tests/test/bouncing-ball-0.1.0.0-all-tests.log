@@ -3,15 +3,15 @@ Test suite all-tests: RUNNING...
 ==== Environment Tests ====
 +++ OK, passed 100 tests.
 +++ OK, passed 100 tests.
--- Environment Tests completed in 0.000539862s
+-- Environment Tests completed in 0.000537476s
 
 ==== Input Tests ====
-+++ OK, passed 100 tests; 283 discarded.
--- Input Tests completed in 0.000678589s
++++ OK, passed 100 tests; 358 discarded.
+-- Input Tests completed in 0.000877163s
 
 ==== Draw Tests ====
 *** Failed! Falsified (after 1 test):
-Environment {framePerSecond = 360, frameDimension = (963,891), ballRadius = 20.217146, ballStartV = 5.0, ballCharge = 5.0, maxBallVel = 200.0, ballCounts = 10, saveLogTxt = False, logTxtPath = "ball_log.txt", shooterSpeed = 200.0, shooterRadius = 10.0, bulletSpeed = 400.0, bulletRadius = 3.0}
+Environment {framePerSecond = 360, frameDimension = (925,1785), ballRadius = 23.962753, ballStartV = 5.0, ballCharge = 5.0, maxBallVel = 200.0, ballCounts = 10, saveLogTxt = False, logTxtPath = "ball_log.txt", shooterSpeed = 200.0, shooterRadius = 10.0, bulletSpeed = 400.0, bulletRadius = 3.0}
 Exception thrown while showing test case:
   Prelude.undefined
   CallStack (from HasCallStack):
@@ -19,19 +19,19 @@ Exception thrown while showing test case:
     undefined, called at test/TestDraw.hs:30:15 in main:TestDraw
 
 0.0
--- Draw Tests completed in 0.000142877s
+-- Draw Tests completed in 0.000286547s
 
 ==== Init Tests ====
 +++ OK, passed 100 tests.
--- Init Tests completed in 0.000551076s
+-- Init Tests completed in 0.000708625s
 
 ==== State Tests ====
 +++ OK, passed 100 tests.
--- State Tests completed in 0.000165996s
+-- State Tests completed in 0.000271309s
 
 ==== Game Tests ====
 +++ OK, passed 100 tests.
--- Game Tests completed in 0.000281871s
+-- Game Tests completed in 0.000291824s
 
 All tests finished!
 Test suite all-tests: PASS
